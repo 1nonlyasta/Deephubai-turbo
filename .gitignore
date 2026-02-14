@@ -1,0 +1,46 @@
+# === Dependencies ===
+node_modules/
+
+# === Build Output ===
+dist/
+
+# === Environment Variables (contains API keys!) ===
+.env
+.env.local
+.env.*.local
+
+# === Uploads & User Data ===
+uploads/
+
+# === Tesseract Training Data (downloadable) ===
+eng.traineddata
+
+# === IDE / Editor ===
+.kiro/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# === OS Files ===
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# === Logs & Debug ===
+*.log
+npm-debug.log*
+build_log.txt
+
+# === Test/Dev Files ===
+test-kimi.js
+test.txt
+test_server.ts
+models.txt
+
+# === Local State ===
+library.json
+
+# === Misc ===
+*.tsbuildinfo
