@@ -16,7 +16,8 @@ uploads/
 eng.traineddata
 
 # === IDE / Editor ===
-.kiro/
+.kiro/*
+!.kiro/specs/
 .vscode/
 .idea/
 *.swp
