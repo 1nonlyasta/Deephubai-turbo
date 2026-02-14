@@ -680,11 +680,63 @@ router.post('/analyze-report', memoryUpload.single('report'), async (req: any, r
 /* ==================== THE SECRETARY ==================== */
 router.post('/secretary/generate', async (req, res) => {
     try {
-        const { template, context } = req.body;
+        const { template, context, branding, studentName, issuerName, issuerDesignation, issuerEmail, receiverName, date, institutionName } = req.body;
+
+        const templateDescriptions: Record<string, string> = {
+            permission: "an official permission slip GRANTED BY the school authority (Principal/Teacher) allowing the student to participate in a specific activity, field trip, or event. This is NOT a request from the student — it is the school GRANTING permission.",
+            certificate: "an official achievement certificate ISSUED BY the school/institution recognizing and celebrating a student's academic excellence, sports achievement, or other accomplishment",
+            warning: "a formal disciplinary warning letter ISSUED BY the school administration/teacher to a student or their parent/guardian regarding behavioral or conduct issues, with clear expectations and consequences",
+            notice: "an official event notice or circular ISSUED BY the school administration to students/parents/staff regarding an upcoming event, holiday, schedule change, or important announcement",
+            recommendation: "an official letter of recommendation WRITTEN BY a teacher/principal on behalf of a student, endorsing and recommending the student for admission, scholarship, internship, or other opportunities based on their academic performance and character"
+        };
+
+        const docType = templateDescriptions[template] || "a formal school document";
+        const brandingInfo = branding ? `\nInstitution Name: ${branding.name || institutionName || 'Not specified'}\nAddress: ${branding.address || ''}\nPhone: ${branding.phone || ''}\nEmail: ${branding.email || ''}` : (institutionName ? `\nInstitution Name: ${institutionName}` : '');
+
+        const systemPrompt = `You are an expert academic document drafter writing on behalf of a school authority (Principal, Head of Department, or Teacher). Every document you produce is FROM the institution/authority TO or ABOUT a student.
+
+PERSPECTIVE (CRITICAL — NEVER VIOLATE):
+- CORRECT: "We hereby grant permission...", "I am pleased to recommend...", "This is to certify that...", "It has come to our attention..."
+- WRONG: "I request permission...", "I am writing to apply...", "I kindly request..."
+- You are the AUTHORITY issuing the document. The student is the SUBJECT, not the author.
+
+OUTPUT FORMAT:
+- Produce ONLY the document body text (salutation + body paragraphs).
+- Do NOT include letterhead, date, reference number, signature block, or "Yours sincerely/faithfully" — the application renders those separately.
+- Plain text only. No markdown, no bold, no bullet points, no asterisks.
+
+LENGTH & TONE (CRITICAL):
+- Write strictly **200–300 words**. The document MUST fit on a single A4 page.
+- Focus on a professional, highly academic tone as seen in formal recommendation letters.
+- Use precisely 2-3 detailed paragraphs.
+- For recommendations: focus on specific qualities like scientific inquiry, analytical reasoning, and intellectual curiosity as requested in the example.`;
+
+        const { refNumber, departmentName, documentSubject } = req.body;
+
+        const userPrompt = `Draft ${docType}.
+
+Subject: ${documentSubject || docType.toUpperCase()}
+Reference Number: ${refNumber || 'N/A'}
+Department: ${departmentName || 'N/A'}
+Student Name: ${studentName || 'the student'}
+Issued By (Authority): ${issuerName || 'The Principal'}${issuerDesignation ? `, ${issuerDesignation}` : ''}
+${issuerEmail ? `Contact Email: ${issuerEmail}` : ''}
+Addressed To: ${receiverName || 'To Whom It May Concern'}
+Date: ${date || new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+${brandingInfo}
+
+Teacher's Context/Instructions:
+${context}
+
+Write the complete document body now. Remember: Strictly 200-300 words, teacher perspective, formal letter format.`;
+
         const completion = await AI.complete({
             model: "llama-3.3-70b-versatile",
-            messages: [{ role: "user", content: `${template}: ${context}` }] as any,
-            temperature: 0.5,
+            messages: [
+                { role: "system", content: systemPrompt },
+                { role: "user", content: userPrompt }
+            ] as any,
+            temperature: 0.6,
         });
         res.json({ success: true, content: completion.choices[0].message.content });
     } catch (error) {
