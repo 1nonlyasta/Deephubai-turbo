@@ -91,9 +91,6 @@ export default function TurboSidebar({ activePage, setActivePage, collapsed, set
         { id: 'report-assistant', label: 'Report Assistant', icon: BarChart3 },
         { id: 'secretary', label: 'The Secretary', icon: FileEdit },
         { id: 'shuffler', label: 'The Shuffler', icon: Shuffle },
-        { id: 'curriculum', label: 'Curriculum Tracker', icon: TrendingUp },
-        { id: 'doubts', label: 'Doubt Bank', icon: HelpCircle },
-        { id: 'strategies', label: 'Teaching Strategies', icon: Lightbulb },
         { id: 'analytics', label: 'Analytics', icon: BarChart3 },
         { id: 'settings', label: 'Settings', icon: Settings },
     ];

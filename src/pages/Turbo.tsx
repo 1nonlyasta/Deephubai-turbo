@@ -13,6 +13,7 @@ import PaperSolver from '../components/turbo/tools/PaperSolver';
 import ReportCardAssistant from '../components/turbo/tools/ReportCardAssistant';
 import DocumentSecretary from '../components/turbo/tools/DocumentSecretary';
 import QuizShuffler from '../components/turbo/tools/QuizShuffler';
+import TurboAnalytics from '../components/turbo/tools/TurboAnalytics';
 import Library from '../components/turbo/dashboard/Library';
 import TurboChat from '../components/turbo/dashboard/TurboChat';
 import TurboWatchDial from '../components/turbo/TurboWatchDial';
@@ -105,13 +106,14 @@ export default function Turbo() {
                                     {activePage === 'report-assistant' && <ReportCardAssistant />}
                                     {activePage === 'secretary' && <DocumentSecretary />}
                                     {activePage === 'shuffler' && <QuizShuffler />}
+                                    {activePage === 'analytics' && <TurboAnalytics />}
                                 </div>
                             </div>
                         )}
                     </div>
 
                     {/* Fallback */}
-                    {activePage !== 'dashboard' && activePage !== 'library' && activePage !== 'question-gen' && activePage !== 'homework' && activePage !== 'lesson-plan' && activePage !== 'ppt-gen' && activePage !== 'paper-solver' && activePage !== 'report-assistant' && activePage !== 'secretary' && activePage !== 'shuffler' && (
+                    {activePage !== 'dashboard' && activePage !== 'library' && activePage !== 'question-gen' && activePage !== 'homework' && activePage !== 'lesson-plan' && activePage !== 'ppt-gen' && activePage !== 'paper-solver' && activePage !== 'report-assistant' && activePage !== 'secretary' && activePage !== 'shuffler' && activePage !== 'analytics' && (
                         <div className="flex flex-col items-center justify-center h-[50vh] text-center p-8">
                             <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-4 text-cyan-400">
                                 <Database size={32} />

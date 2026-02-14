@@ -8,13 +8,14 @@ DeepHubAI Turbo is a production-ready, AI-powered suite of tools designed specif
 
 ### 2.1 Core AI Tools
 
-The system must provide the following 9 distinct tools accessible from a unified dashboard:
+The system must provide 9 distinct AI-powered modules accessible from a unified dashboard:
 
 #### 2.1.1 Lesson Plan Builder
 
 **User Story:** As an educator, I want to generate structured lesson plans quickly so that I can focus on teaching rather than planning documentation.
 
 **Acceptance Criteria:**
+
 1. System accepts topic, grade level, subject, and duration as inputs
 2. Generated lesson plan includes objectives, materials, procedure, and assessment methods
 3. User can export lesson plans to PDF format
@@ -26,6 +27,7 @@ The system must provide the following 9 distinct tools accessible from a unified
 **User Story:** As a teacher, I want to create homework assignments with answer keys so that I can save time on assignment preparation.
 
 **Acceptance Criteria:**
+
 1. System accepts topic, difficulty level, and question types (MCQ, Short Answer) as inputs
 2. Generated homework sheets are ready-to-print format
 3. System automatically generates answer keys for all questions
@@ -37,6 +39,7 @@ The system must provide the following 9 distinct tools accessible from a unified
 **User Story:** As an educator, I want to generate standardized question papers so that I can create fair assessments efficiently.
 
 **Acceptance Criteria:**
+
 1. System accepts syllabus/chapter coverage, total marks, and blueprint as inputs
 2. Generated question paper adheres to academic formatting standards
 3. User can shuffle questions to create different sets
@@ -48,6 +51,7 @@ The system must provide the following 9 distinct tools accessible from a unified
 **User Story:** As a teacher, I want to upload question papers and get AI-generated solutions so that I can quickly create answer keys.
 
 **Acceptance Criteria:**
+
 1. System accepts uploaded images (PNG, JPG) of question papers
 2. System accepts uploaded PDF documents of question papers
 3. OCR accurately extracts text from scanned documents (>90% accuracy)
@@ -59,6 +63,7 @@ The system must provide the following 9 distinct tools accessible from a unified
 **User Story:** As a teacher, I want to generate personalized report card comments so that I can provide meaningful feedback efficiently.
 
 **Acceptance Criteria:**
+
 1. System accepts student performance data and key competencies as inputs
 2. Generated comments are personalized and constructive
 3. Comments align with educational best practices
@@ -70,50 +75,58 @@ The system must provide the following 9 distinct tools accessible from a unified
 **User Story:** As an educator, I want to create presentation slides from topics so that I can prepare visual teaching materials quickly.
 
 **Acceptance Criteria:**
+
 1. System accepts topic and key points as inputs
 2. Generated presentation has proper slide structure (title, content, conclusion)
 3. Output is downloadable as PowerPoint (.pptx) format
 4. Slides include appropriate formatting and layout
 5. User can specify number of slides to generate
 
-#### 2.1.7 Document Secretary
+#### 2.1.7 Document Secretary (Institutional Format)
 
-**User Story:** As an administrator, I want an AI assistant to draft professional documents so that I can handle administrative tasks efficiently.
+**User Story:** As an administrator, I want an AI assistant to draft professional institutional documents (Reference Letters, Circulars) that follow a strict single-page A4 format.
 
 **Acceptance Criteria:**
-1. System can draft emails with proper formatting
-2. System can create circulars and administrative notices
-3. Generated documents follow professional tone and structure
-4. User can specify document type and key points
-5. Output is editable before finalization
+
+1. System generates documents with a formal institutional header (Logo/Branding)
+2. Includes properly aligned Reference Number (Left) and Date (Right)
+3. Centered, bold, and underlined Document Subject/Title in All Caps
+4. Generated content is strictly limited to 200-300 words to ensure single-page fit
+5. Professional signature block includes Designation, Department, and Institution name
+6. Output matches official recommendation letter standards (Serif font, Justified text)
+7. Dynamic template support for Recommendations, Permissions, Certificates, Warnings, and Notices
 
 #### 2.1.8 Quiz Shuffler
 
 **User Story:** As a teacher, I want to create multiple versions of quizzes with shuffled questions so that I can prevent cheating during assessments.
 
 **Acceptance Criteria:**
+
 1. System accepts quiz content with questions and options
 2. System generates multiple versions with shuffled question order
 3. System shuffles options within each question
 4. Each version maintains the same content but different arrangement
 5. Output is exportable to PDF format
 
-#### 2.1.9 PDF Snipper & OCR Utilities
+#### 2.1.9 Neural Analytics Dashboard
 
-**User Story:** As a teacher, I want to extract text from PDFs and images so that I can digitize physical documents.
+**User Story:** As an administrator, I want to monitor AI performance and model efficiency so that I can ensure the highest quality of service.
 
 **Acceptance Criteria:**
-1. System can extract text from PDF documents using pdf-parse
-2. System can perform OCR on scanned documents using Tesseract.js
-3. System supports snippet-based OCR for specific document sections
-4. System can process medical prescriptions and handwritten text
-5. OCR accuracy exceeds 90% on clear scanned documents
+
+1. Real-time tracking of processing speed (Tokens/s)
+2. Inference latency monitoring (ms per request)
+3. Comparative benchmarking between Turbo V4 (70B) and standard architectures
+4. Visual representation of system throughput velocity via animated charts
+5. Node status tracking (Primary, Semantic Pulse, Offline Buffers)
+6. High-end glassmorphism UI with smooth entry transitions
 
 ### 2.2 User Interface (UI)
 
 #### 2.2.1 Dashboard
 
 **Acceptance Criteria:**
+
 1. Dashboard displays all 8 AI tools as accessible cards/buttons
 2. Each tool has clear icon and description
 3. Dashboard loads within 2 seconds on standard connections
@@ -123,6 +136,7 @@ The system must provide the following 9 distinct tools accessible from a unified
 #### 2.2.2 Input Mechanism
 
 **Acceptance Criteria:**
+
 1. Centralized input interface is persistent across tool navigation
 2. Input fields are clearly labeled and validated
 3. User receives immediate feedback on invalid inputs
@@ -132,6 +146,7 @@ The system must provide the following 9 distinct tools accessible from a unified
 #### 2.2.3 Responsiveness
 
 **Acceptance Criteria:**
+
 1. Interface adapts to desktop screens (1920x1080 and above)
 2. Interface adapts to tablet screens (768px and above)
 3. All interactive elements are touch-friendly (min 44x44px)
@@ -141,6 +156,7 @@ The system must provide the following 9 distinct tools accessible from a unified
 #### 2.2.4 Theme Support
 
 **Acceptance Criteria:**
+
 1. System provides light theme option
 2. System provides dark theme option
 3. Theme preference is saved and persists across sessions
@@ -152,6 +168,7 @@ The system must provide the following 9 distinct tools accessible from a unified
 #### 2.3.1 Multi-Model Architecture
 
 **Acceptance Criteria:**
+
 1. Groq (Llama-3.3-70B-Versatile) is used as primary inference engine
 2. System automatically falls back to Gemini 2.0 Flash on Groq failure/rate limit
 3. Gemini 2.0 Flash includes native Google Search grounding tool for real-time information
@@ -164,6 +181,7 @@ The system must provide the following 9 distinct tools accessible from a unified
 #### 2.3.2 Local/Client-Side Processing
 
 **Acceptance Criteria:**
+
 1. OCR processing occurs entirely in browser using Tesseract.js WASM
 2. PDF generation occurs client-side using jsPDF + html2canvas
 3. PPT generation occurs client-side using PptxGenJS with slides, tables, comparisons, speaker notes
@@ -175,6 +193,7 @@ The system must provide the following 9 distinct tools accessible from a unified
 #### 2.3.3 File Handling
 
 **Acceptance Criteria:**
+
 1. System accepts PDF files up to 10MB via Multer
 2. System accepts image files (PNG, JPG, JPEG) up to 5MB
 3. File upload includes drag-and-drop support
@@ -187,6 +206,7 @@ The system must provide the following 9 distinct tools accessible from a unified
 #### 2.3.4 Export Formats
 
 **Acceptance Criteria:**
+
 1. All generated content can be exported to PDF using jsPDF + html2canvas
 2. Presentation content can be exported to PPTX using PptxGenJS
 3. PPTX includes title slides, content slides, table slides, comparison slides, speaker notes
@@ -201,6 +221,7 @@ The system must provide the following 9 distinct tools accessible from a unified
 ### 3.1 Performance
 
 **Acceptance Criteria:**
+
 1. AI responses are generated within 5 seconds for standard requests using Groq
 2. Application initial load time is under 2 seconds
 3. Groq inference provides ~300 tokens/second throughput (Llama-3.3-70B-Versatile)
@@ -213,6 +234,7 @@ The system must provide the following 9 distinct tools accessible from a unified
 ### 3.2 Security & Privacy
 
 **Acceptance Criteria:**
+
 1. API keys are stored in environment variables only (GROQ_API_KEY, GEMINI_API_KEY, MOONSHOT_API_KEY, JWT_SECRET)
 2. API keys are never exposed in client bundle
 3. All API communication occurs over HTTPS
@@ -227,6 +249,7 @@ The system must provide the following 9 distinct tools accessible from a unified
 ### 3.3 Reliability
 
 **Acceptance Criteria:**
+
 1. System handles API rate limits gracefully with user-friendly messages
 2. Automatic failover between AI providers occurs transparently (Groq → Gemini → Ollama)
 3. Application functions offline for navigation and local features (OCR, PDF, PPTX)
@@ -239,12 +262,12 @@ The system must provide the following 9 distinct tools accessible from a unified
 ### 3.4 Usability
 
 **Acceptance Criteria:**
+
 1. All UI elements have clear labels and tooltips
 2. Content generation requires maximum 3 clicks
 3. Error messages are actionable and user-friendly
 4. Loading states are clearly indicated
 5. Help documentation is accessible from all tools
-
 
 ### 2.4 Authentication & User Management
 
@@ -253,6 +276,7 @@ The system must provide the following 9 distinct tools accessible from a unified
 **User Story:** As a user, I want to securely register and login so that my data is protected.
 
 **Acceptance Criteria:**
+
 1. System provides user registration with username, email, and password
 2. Passwords are hashed using bcrypt with salt rounds 10
 3. System generates JWT tokens with 7-day expiration
@@ -269,6 +293,7 @@ The system must provide the following 9 distinct tools accessible from a unified
 **User Story:** As a teacher, I want to save and manage generated content so that I can reuse it later.
 
 **Acceptance Criteria:**
+
 1. System provides API to save generated content to library
 2. System provides API to fetch all library items
 3. System provides API to delete library items by ID

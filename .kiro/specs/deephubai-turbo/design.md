@@ -121,6 +121,7 @@ graph TD
 ### 3.1 Core Components
 
 #### 3.1.1 Dashboard Component
+
 - **Purpose:** Central hub for accessing all AI tools
 - **Props:** `tools: ToolConfig[]`, `onToolSelect: (toolId: string) => void`
 - **State:** `selectedTool: string | null`, `recentActivity: Activity[]`
@@ -131,6 +132,7 @@ graph TD
   - Manage theme toggle
 
 #### 3.1.2 Tool Container Component
+
 - **Purpose:** Wrapper for individual AI tool interfaces
 - **Props:** `toolId: string`, `config: ToolConfig`
 - **State:** `inputData: Record<string, any>`, `isProcessing: boolean`, `result: any`
@@ -141,14 +143,20 @@ graph TD
   - Handle export operations
 
 #### 3.1.3 AI Service Manager
+
 - **Purpose:** Orchestrate AI model selection and failover
 - **Interface:**
   ```typescript
   interface AIServiceManager {
-    generateContent(prompt: string, options: GenerationOptions): Promise<string>
-    selectProvider(provider: 'auto' | 'groq' | 'gemini' | 'ollama' | 'moonshot'): void
-    getAvailableProviders(): ProviderInfo[]
-    handleFailover(error: APIError): Promise<string>
+    generateContent(
+      prompt: string,
+      options: GenerationOptions,
+    ): Promise<string>;
+    selectProvider(
+      provider: "auto" | "groq" | "gemini" | "ollama" | "moonshot",
+    ): void;
+    getAvailableProviders(): ProviderInfo[];
+    handleFailover(error: APIError): Promise<string>;
   }
   ```
 - **Responsibilities:**
@@ -160,15 +168,16 @@ graph TD
   - Maintain conversation context across provider switches
 
 #### 3.1.4 Export Service
+
 - **Purpose:** Handle document generation and export
 - **Interface:**
   ```typescript
   interface ExportService {
-    exportToPDF(content: string, options: PDFOptions): Promise<Blob>
-    exportToPPTX(slides: SlideData[], options: PPTXOptions): Promise<Blob>
-    exportToMarkdown(content: string): string
-    exportToJSON(data: any): string
-    copyToClipboard(content: string): Promise<void>
+    exportToPDF(content: string, options: PDFOptions): Promise<Blob>;
+    exportToPPTX(slides: SlideData[], options: PPTXOptions): Promise<Blob>;
+    exportToMarkdown(content: string): string;
+    exportToJSON(data: any): string;
+    copyToClipboard(content: string): Promise<void>;
   }
   ```
 - **PPTX Features:**
@@ -181,6 +190,7 @@ graph TD
 ### 3.2 Tool-Specific Components
 
 Each AI tool follows this structure:
+
 - Input form component with validation
 - Preview component for generated content with Markdown/LaTeX rendering
 - Export controls component (PDF, PPTX, Markdown, JSON, Clipboard)
@@ -188,15 +198,16 @@ Each AI tool follows this structure:
 - File upload support (where applicable)
 
 **Implemented Tools:**
+
 1. **LessonPlanBuilder.tsx** - Structured lesson plan generation
 2. **HomeworkCreator.tsx** - Homework with answer keys
 3. **QuestionPaperGenerator.tsx** - Question papers with file upload
 4. **PaperSolver.tsx** - Paper solving with chunking strategy
 5. **ReportCardAssistant.tsx** - Report card comments with vision support
 6. **PPTGenerator.tsx** - PowerPoint slide generation
-7. **DocumentSecretary.tsx** - Professional document drafting
+7. **DocumentSecretary.tsx** - Professional institutional document drafting with A4 layout
 8. **QuizShuffler.tsx** - Quiz version shuffling
-9. **PDFSnipper.tsx** - PDF text extraction and OCR
+9. **TurboAnalytics.tsx** - High-performance neural analytics dashboard
 
 ## 4. Data Flow & Fallback Strategy
 
@@ -221,13 +232,14 @@ Each AI tool follows this structure:
 
 ```typescript
 interface ErrorHandler {
-  handleAPIError(error: APIError): UserFacingError
-  handleNetworkError(error: NetworkError): UserFacingError
-  handleValidationError(error: ValidationError): UserFacingError
+  handleAPIError(error: APIError): UserFacingError;
+  handleNetworkError(error: NetworkError): UserFacingError;
+  handleValidationError(error: ValidationError): UserFacingError;
 }
 ```
 
 **Error Categories:**
+
 - **Rate Limit (429):** Automatic failover to backup model
 - **Network Error:** Retry with exponential backoff (max 3 attempts)
 - **Validation Error:** Display inline error messages
@@ -240,6 +252,7 @@ interface ErrorHandler {
 #### 5.1.1 Main Server (Port 3001)
 
 **Chat Endpoint:**
+
 ```typescript
 POST /api/chat
 Request: {
@@ -256,6 +269,7 @@ Response: {
 ```
 
 **Lesson Plan Generation:**
+
 ```typescript
 POST /api/lesson-plan/generate
 Request: {
@@ -276,6 +290,7 @@ Response: {
 ```
 
 **Question Paper Generation:**
+
 ```typescript
 POST /api/question-paper/generate
 Content-Type: multipart/form-data
@@ -294,6 +309,7 @@ Response: {
 ```
 
 **Paper Solver:**
+
 ```typescript
 POST /api/solve-paper
 Content-Type: multipart/form-data
@@ -311,6 +327,7 @@ Response: {
 ```
 
 **Library Management:**
+
 ```typescript
 POST /api/library/save
 Request: {
@@ -333,20 +350,22 @@ Response: {
 #### 5.1.2 Auth Server (Port 3002)
 
 **User Registration:**
+
 ```typescript
-POST /api/auth/signup
+POST / api / auth / signup;
 Request: {
-  username: string
-  email: string
-  password: string
+  username: string;
+  email: string;
+  password: string;
 }
 Response: {
-  message: string
-  userId: string
+  message: string;
+  userId: string;
 }
 ```
 
 **User Login:**
+
 ```typescript
 POST /api/auth/login
 Request: {
@@ -368,27 +387,27 @@ Response: {
 
 ```typescript
 interface GroqRequest {
-  model: string // "llama-3.3-70b-versatile"
-  messages: Message[]
-  temperature?: number
-  max_tokens?: number
-  stream?: boolean
+  model: string; // "llama-3.3-70b-versatile"
+  messages: Message[];
+  temperature?: number;
+  max_tokens?: number;
+  stream?: boolean;
 }
 
 interface GroqResponse {
-  id: string
+  id: string;
   choices: {
     message: {
-      role: string
-      content: string
-    }
-    finish_reason: string
-  }[]
+      role: string;
+      content: string;
+    };
+    finish_reason: string;
+  }[];
   usage: {
-    prompt_tokens: number
-    completion_tokens: number
-    total_tokens: number
-  }
+    prompt_tokens: number;
+    completion_tokens: number;
+    total_tokens: number;
+  };
 }
 ```
 
@@ -396,21 +415,21 @@ interface GroqResponse {
 
 ```typescript
 interface GeminiRequest {
-  contents: Content[]
+  contents: Content[];
   generationConfig?: {
-    temperature?: number
-    maxOutputTokens?: number
-  }
-  safetySettings?: SafetySetting[]
+    temperature?: number;
+    maxOutputTokens?: number;
+  };
+  safetySettings?: SafetySetting[];
 }
 
 interface GeminiResponse {
   candidates: {
     content: {
-      parts: { text: string }[]
-    }
-    finishReason: string
-  }[]
+      parts: { text: string }[];
+    };
+    finishReason: string;
+  }[];
 }
 ```
 
@@ -418,19 +437,19 @@ interface GeminiResponse {
 
 ```typescript
 interface OllamaRequest {
-  model: string // "llama3.2"
-  prompt: string
-  stream?: boolean
+  model: string; // "llama3.2"
+  prompt: string;
+  stream?: boolean;
   options?: {
-    temperature?: number
-    num_predict?: number
-  }
+    temperature?: number;
+    num_predict?: number;
+  };
 }
 
 interface OllamaResponse {
-  model: string
-  response: string
-  done: boolean
+  model: string;
+  response: string;
+  done: boolean;
 }
 ```
 
@@ -441,31 +460,34 @@ interface OllamaResponse {
 ```typescript
 interface AppState {
   // Theme
-  theme: 'light' | 'dark'
-  setTheme: (theme: 'light' | 'dark') => void
-  
+  theme: "light" | "dark";
+  setTheme: (theme: "light" | "dark") => void;
+
   // AI Provider Selection
-  selectedProvider: 'auto' | 'groq' | 'gemini' | 'ollama' | 'moonshot'
-  setSelectedProvider: (provider: 'auto' | 'groq' | 'gemini' | 'ollama' | 'moonshot') => void
-  
+  selectedProvider: "auto" | "groq" | "gemini" | "ollama" | "moonshot";
+  setSelectedProvider: (
+    provider: "auto" | "groq" | "gemini" | "ollama" | "moonshot",
+  ) => void;
+
   // Tool State
-  activeTool: string | null
-  setActiveTool: (toolId: string | null) => void
-  
+  activeTool: string | null;
+  setActiveTool: (toolId: string | null) => void;
+
   // History
-  recentActivity: Activity[]
-  addActivity: (activity: Activity) => void
-  
+  recentActivity: Activity[];
+  addActivity: (activity: Activity) => void;
+
   // Library
-  libraryItems: LibraryItem[]
-  addToLibrary: (item: LibraryItem) => void
-  removeFromLibrary: (id: string) => void
+  libraryItems: LibraryItem[];
+  addToLibrary: (item: LibraryItem) => void;
+  removeFromLibrary: (id: string) => void;
 }
 ```
 
 ### 6.2 Tool-Specific State
 
 Each tool maintains its own local state using React hooks:
+
 - Input form data
 - Validation errors
 - Processing status
@@ -528,70 +550,85 @@ Each tool maintains its own local state using React hooks:
 ### 9.1 AI Response Properties
 
 **Property 1: Response Completeness**
+
 - For any valid input, the AI service must return a non-empty response or a well-defined error
 - **Validates:** Requirements 2.3.1, 3.3.1
 
 **Property 2: Failover Consistency**
+
 - If primary model fails, failover to secondary model must occur within 2 seconds
 - **Validates:** Requirements 2.3.1, 3.1.1
 
 **Property 3: Model Selection Idempotency**
+
 - Selecting the same model multiple times produces consistent behavior
 - **Validates:** Requirements 2.3.1
 
 ### 9.2 Export Properties
 
 **Property 4: Export Format Validity**
+
 - All exported PDFs must be valid PDF format (parseable by standard readers)
 - **Validates:** Requirements 2.3.4
 
 **Property 5: Export Content Preservation**
+
 - Content exported to any format must match the displayed content (no data loss)
 - **Validates:** Requirements 2.3.4
 
 **Property 6: Export Filename Validity**
+
 - Generated filenames must be valid for all major operating systems
 - **Validates:** Requirements 2.3.4
 
 ### 9.3 Input Validation Properties
 
 **Property 7: Input Sanitization**
+
 - All user inputs must be sanitized before processing (no script injection)
 - **Validates:** Requirements 3.2.1
 
 **Property 8: File Size Limits**
+
 - System must reject files exceeding specified size limits with clear error messages
 - **Validates:** Requirements 2.3.3
 
 **Property 9: File Format Validation**
+
 - System must only accept specified file formats and reject others gracefully
 - **Validates:** Requirements 2.3.3
 
 ### 9.4 UI State Properties
 
 **Property 10: Theme Persistence**
+
 - Theme selection must persist across browser sessions
 - **Validates:** Requirements 2.2.4
 
 **Property 11: Navigation State Preservation**
+
 - Navigating between tools must preserve unsaved input data
 - **Validates:** Requirements 2.2.2
 
 **Property 12: Loading State Consistency**
+
 - UI must always show loading indicator during async operations
 - **Validates:** Requirements 3.4.4
 
 ### 9.5 Error Handling Properties
 
 **Property 13: Error Recovery**
+
 - System must recover from any error without requiring page refresh
 - **Validates:** Requirements 3.3.5
 
 **Property 14: Error Message Clarity**
+
 - All error messages must be actionable and user-friendly (no technical jargon)
 - **Validates:** Requirements 3.4.3
 
 **Property 15: Graceful Degradation**
+
 - System must function offline for local features when internet is unavailable
 - **Validates:** Requirements 3.3.3
 
@@ -602,16 +639,16 @@ Each tool maintains its own local state using React hooks:
 Use **fast-check** library for property-based testing in TypeScript:
 
 ```typescript
-import fc from 'fast-check'
+import fc from "fast-check";
 
 // Example: Test AI Service failover property
 fc.assert(
   fc.property(fc.string(), async (prompt) => {
-    const service = new AIServiceManager()
-    const result = await service.generateContent(prompt, { timeout: 5000 })
-    return result !== null && result !== undefined
-  })
-)
+    const service = new AIServiceManager();
+    const result = await service.generateContent(prompt, { timeout: 5000 });
+    return result !== null && result !== undefined;
+  }),
+);
 ```
 
 ### 10.2 Unit Testing

@@ -16,10 +16,12 @@ DeepHubAI Turbo is a production-ready educational tool suite designed to empower
 
 ## 🚀 Why DeepHubAI Turbo?
 
-- **⚡ Zero Latency:** Powered by Groq's LPU Inference Engine (Llama-3.3-70B-Versatile), generating lesson plans at 300+ tokens/sec
+- **⚡ Zero Latency:** Powered by Groq's LPU Inference Engine (Llama-3.3-70B-Versatile), generating content at 300+ tokens/sec
 - **🧠 Intelligent Fallback Chain:** Automatic switching between Groq → Gemini 2.0 Flash → Ollama (Llama 3.2:1b) on rate limits/failures, ensuring 100% uptime
-- **� Native Web Search:** Gemini 2.0 Flash integration with Google Search grounding tool for real-time information retrieval
-- **� Privacy-First Deep Research:** Route sensitive queries to loscal Ollama (Llama 3.2:1b) - data never leaves your machine
+- **📊 Neural Analytics:** High-performance dashboard tracking AI speed, throughput, and model efficiency in real-time
+- **🖋️ Institutional Document Secretary:** Refined A4-perfect letter generator with strict institutional formatting and 200-300 word AI calibration
+- **🧠 Native Web Search:** Gemini 2.0 Flash integration with Google Search grounding tool for real-time information retrieval
+- **🛡️ Privacy-First Deep Research:** Route sensitive queries to local Ollama (Llama 3.2:1b) - data never leaves your machine
 - **👁️ Advanced OCR Vision:** Tesseract.js WASM + Vision models for handwritten question paper digitization (>90% accuracy)
 - **🎨 Modern UI/UX:** Glassmorphism design with light/dark theme support and responsive layouts
 - **🔐 Enterprise Security:** JWT authentication, bcrypt password hashing, MongoDB user management
@@ -66,9 +68,9 @@ Create PowerPoint presentations with title slides, content slides, table slides,
 
 **API:** `POST /api/ppt/generate`
 
-#### 7. 📧 Document Secretary
+#### 7. 🖋️ Document Secretary (Institutional)
 
-AI assistant for drafting professional emails, circulars, and administrative notices with proper formatting and tone.
+AI assistant for drafting professional institutional documents (Recommendations, Circulars) with strict A4 single-page formatting, official headers, and professional signature blocks.
 
 **API:** `POST /api/secretary/generate`
 
@@ -78,11 +80,11 @@ Create multiple versions of quizzes with shuffled questions and options for fair
 
 **API:** `POST /api/shuffler/version`
 
-#### 9. 📑 PDF Snipper & OCR Utilities
+#### 9. 📊 Neural Analytics Dashboard
 
-Extract text from PDFs with automatic OCR fallback. Supports snippet-based OCR for scanned documents and medical prescriptions.
+A stunning, glassmorphism-driven dashboard for monitoring AI performance. Tracks tokens/s, inference latency, and benchmarks Turbo V4 (70B) against standard models.
 
-**API:** `POST /api/ocr` (medical/prescription OCR)
+**Feature:** Real-time throughput velocity tracking and neural node status monitoring.
 
 ---
 
