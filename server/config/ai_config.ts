@@ -50,7 +50,7 @@ const AI = {
                 targetModel = 'llama3.2:1b';
              }
         } else if (effectiveProvider === 'groq') {
-             if (!targetModel || (!targetModel.includes('70b') && !targetModel.includes('8b') && !targetModel.includes('vision') && !targetModel.includes('90b'))) {
+             if (!targetModel || (!targetModel.includes('70b') && !targetModel.includes('8b') && !targetModel.includes('vision') && !targetModel.includes('90b') && !targetModel.includes('llama-4') && !targetModel.includes('meta-llama'))) {
                  targetModel = 'llama-3.3-70b-versatile';
              }
         }

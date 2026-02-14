@@ -236,7 +236,7 @@ export default function ReportCardAssistant() {
                          </div>
                     </div>
 
-                    <div className="bg-[#0a0c10] border border-white/5 rounded-3xl p-4 shadow-xl flex-1 flex flex-col relative overflow-hidden">
+                    <div className="bg-[#0a0c10] border border-white/5 rounded-3xl p-4 shadow-xl flex-1 flex flex-col relative overflow-y-auto custom-scrollbar">
                         {!preview ? (
                             <label
                                 onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
@@ -256,21 +256,21 @@ export default function ReportCardAssistant() {
                                 <p className="text-[10px] text-muted-foreground uppercase tracking-widest text-center px-4">Supports PDF, PNG, JPG. We'll extract the photo automatically.</p>
                             </label>
                         ) : (
-                            <div className="flex-1 flex flex-col h-full">
-                                {/* Fixed Aspect Ratio Container for Preview */}
-                                <div className="flex-1 relative rounded-2xl overflow-hidden border border-white/10 bg-black/40 group mb-4">
+                            <div className="flex flex-col gap-4">
+                                {/* Preview Container - natural height, scrollable parent */}
+                                <div className="relative rounded-2xl overflow-hidden border border-white/10 bg-black/40 group">
                                      {preview === 'pdf' ? (
-                                         <div className="w-full h-full flex flex-col items-center justify-center text-center p-6">
+                                         <div className="w-full flex flex-col items-center justify-center text-center p-6">
                                              <FileText size={48} className="text-emerald-500/50 mb-4" />
                                              <p className="text-sm font-medium text-white/80">{file?.name}</p>
                                          </div>
                                      ) : (
-                                        <img src={preview} alt="Preview" className="w-full h-full object-contain" />
+                                        <img src={preview} alt="Preview" className="w-full object-contain" />
                                      )}
                                      
                                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-4 opacity-0 group-hover:opacity-100 transition-opacity flex justify-center">
                                          <label className="text-xs font-bold text-white bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-lg cursor-pointer hover:bg-white/20">
-                                             Change File input
+                                             Change File
                                              <input type="file" className="hidden" accept="image/*,.pdf" onChange={handleFileChange} />
                                          </label>
                                      </div>
@@ -279,7 +279,7 @@ export default function ReportCardAssistant() {
                                 <button
                                     onClick={startAnalysisProcess}
                                     disabled={!file || isAnalyzing || isProcessing}
-                                    className="w-full py-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-black font-black uppercase tracking-[0.2em] rounded-xl transition-all shadow-lg active:scale-95 disabled:opacity-50 disabled:scale-100 flex items-center justify-center gap-3"
+                                    className="shrink-0 w-full py-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-black font-black uppercase tracking-[0.2em] rounded-xl transition-all shadow-lg active:scale-95 disabled:opacity-50 disabled:scale-100 flex items-center justify-center gap-3"
                                 >
                                     {isAnalyzing || isProcessing ? (
                                         <Loader2 className="animate-spin" size={20} />
