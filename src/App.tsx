@@ -1,8 +1,8 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { TooltipProvider } from "./components/product/ProductTooltip";
-import { ProductToaster } from "./components/product/ProductToaster";
+import { TooltipProvider } from "./components/ui/tooltip";
+import { Toaster } from "./components/ui/toaster";
 import Turbo from "./pages/Turbo";
 const NotFound = React.lazy(() => import("./pages/NotFound"));
 import { AIProvider } from "./context/AIContext";
@@ -20,7 +20,7 @@ export default function App() {
                                 <Route path="/" element={<React.Suspense fallback={<div>Loading...</div>}><Turbo /></React.Suspense>} />
                                 <Route path="*" element={<React.Suspense fallback={<div>Loading...</div>}><NotFound /></React.Suspense>} />
                             </Routes>
-                            <ProductToaster />
+                            <Toaster />
                         </div>
                     </BrowserRouter>
                 </AIProvider>
