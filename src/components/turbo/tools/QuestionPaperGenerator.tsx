@@ -43,6 +43,7 @@ export default function QuestionPaperGenerator() {
     const [studyMaterials, setStudyMaterials] = useState<File[]>([]);
     const [examTime, setExamTime] = useState(180); // minutes
     const [difficulty, setDifficulty] = useState('medium');
+    const [targetChapter, setTargetChapter] = useState('');
     const [topics, setTopics] = useState(''); // Chapters/topics to focus on
     const [isGenerating, setIsGenerating] = useState(false);
     const [generatedPaper, setGeneratedPaper] = useState<string | null>(null);
@@ -157,31 +158,79 @@ export default function QuestionPaperGenerator() {
         }
     }, [syllabusFile, studyMaterials]);
 
+    // PDF.js worker setup
+    useEffect(() => {
+        const loadPdfWorker = async () => {
+             const pdfjsLib = await import('pdfjs-dist');
+             // @ts-ignore
+             const workerUrl = await import('pdfjs-dist/build/pdf.worker.min.mjs?url');
+             pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl.default;
+        };
+        loadPdfWorker();
+    }, []);
+
     const analyzeDocuments = async () => {
         if (!syllabusFile) return;
         setIsAnalyzing(true);
         setAnalysisScore(null);
-        setAnalysisFeedback(null);
-
-        const formData = new FormData();
-        formData.append('syllabus', syllabusFile);
-        studyMaterials.forEach(m => formData.append('materials', m));
+        setAnalysisFeedback("Analyzing document quality...");
 
         try {
-            const response = await fetch('/api/analyze-documents', {
-                method: 'POST',
-                body: formData
-            });
-            const data = await response.json();
+            if (syllabusFile.type === 'application/pdf') {
+                const arrayBuffer = await syllabusFile.arrayBuffer();
+                const pdfjsLib = await import('pdfjs-dist');
+                const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
+                
+                let fullText = '';
+                const maxPages = Math.min(pdf.numPages, 5); // Analyze first 5 pages for speed
+                
+                for (let i = 1; i <= maxPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const textContent = await page.getTextContent();
+                    const pageText = textContent.items.map((item: any) => item.str).join(' ');
+                    fullText += pageText + ' ';
+                }
 
-            setAnalysisScore(data.score ?? 75); // Fallback for demo
-            setAnalysisFeedback(data.feedback ?? "Document valid.");
+                // calculate density score
+                const textLength = fullText.trim().length;
+                const pageCount = pdf.numPages;
+                const avgCharsPerPage = textLength / maxPages;
+                
+                let score = 0;
+                let feedback = "";
+
+                if (textLength < 50) {
+                     score = 10;
+                     feedback = "Scanned/Image-based PDF detected. Text extraction failed.";
+                } else if (avgCharsPerPage < 200) {
+                     score = 45;
+                     feedback = "Low text density. Might be a slide deck or sparse document.";
+                } else if (avgCharsPerPage < 500) {
+                     score = 70;
+                     feedback = "Moderate text density. Readable but could be better.";
+                } else {
+                     score = 95;
+                     feedback = "Excellent quality. Text is clear and dense.";
+                }
+
+                // Artificial delay for UX
+                setTimeout(() => {
+                    setAnalysisScore(score);
+                    setAnalysisFeedback(feedback);
+                    setIsAnalyzing(false);
+                }, 800);
+
+            } else {
+                // Image or text file
+                setAnalysisScore(85);
+                setAnalysisFeedback("Format supported.");
+                setIsAnalyzing(false);
+            }
+
         } catch (err) {
-            console.error("Analysis failed", err);
-            // Simulate success for UI restoration if backend is unreachable
-            setAnalysisScore(80);
-            setAnalysisFeedback("Ready to process.");
-        } finally {
+            console.error("Client-side Analysis failed", err);
+            setAnalysisScore(10);
+            setAnalysisFeedback("Failed to read document.");
             setIsAnalyzing(false);
         }
     };
@@ -312,6 +361,10 @@ export default function QuestionPaperGenerator() {
             formData.append('schoolName', schoolName);
             formData.append('examTitle', examTitle);
             formData.append('generalInstructions', instructionPoints.filter(p => p.trim()).join('\n'));
+            if (targetChapter) {
+                console.log('Targeting chapter:', targetChapter);
+                formData.append('targetChapter', targetChapter);
+            }
             
             // Append snippets if available (for scanned PDFs)
             if (syllabusSnippets.length > 0) {
@@ -580,6 +633,21 @@ export default function QuestionPaperGenerator() {
                             <h3 className="font-semibold text-white text-sm uppercase tracking-wide">Structure & Meta</h3>
                         </div>
 
+                        <div className="space-y-1.5">
+                            <label className="text-xs text-white/50 font-medium flex items-center gap-1">
+                                Target Chapter / Topic <span className="text-white/20">(Optional)</span>
+                            </label>
+                            <input
+                                type="text"
+                                value={targetChapter}
+                                onChange={(e) => setTargetChapter(e.target.value)}
+                                disabled={analysisScore !== null && analysisScore < 50}
+                                placeholder={analysisScore !== null && analysisScore < 50 ? "Not available for scanned PDFs (Use Snipping Tool)" : "e.g. Quadratic Equations"}
+                                className="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-primary/50 outline-none placeholder:text-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                            />
+                            <p className="text-[10px] text-white/30">If specified, AI will focus strictly on this chapter from the syllabus.</p>
+                        </div>
+
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-1.5">
                                 <label className="text-xs text-white/50 font-medium">Exam Time (min)</label>
@@ -683,12 +751,22 @@ export default function QuestionPaperGenerator() {
 
                     <button
                         onClick={handleGenerate}
-                        disabled={isGenerating || !syllabusFile}
+                        disabled={isGenerating || !syllabusFile || ((analysisScore !== null && analysisScore < 80) && syllabusSnippets.length === 0)}
                         className="w-full py-3 bg-gradient-to-r from-primary to-blue-600 rounded-xl font-bold text-black shadow-lg hover:shadow-primary/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     >
                         {isGenerating ? <Loader2 className="animate-spin" size={18} /> : <Sparkles size={18} />}
                         {isGenerating ? 'Generating Paper...' : 'Generate Question Paper'}
                     </button>
+
+                    {syllabusFile && analysisScore !== null && analysisScore < 80 && syllabusSnippets.length === 0 && (
+                        <div className="mt-3 p-3 bg-red-500/10 border border-red-500/20 rounded-lg flex items-center gap-2 animate-fade-in">
+                            <AlertCircle size={16} className="text-red-400 shrink-0" />
+                            <p className="text-xs text-red-200 leading-relaxed">
+                                <strong className="font-bold">Compatibility Score Too Low ({analysisScore}%).</strong><br/>
+                                To proceed, please <span className="text-white font-bold inline-flex items-center gap-1 bg-white/10 px-1 rounded mx-1"><Scissors size={10} /> Snip Content</span> from the syllabus manually.
+                            </p>
+                        </div>
+                    )}
 
                 </div>
 

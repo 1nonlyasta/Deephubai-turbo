@@ -188,16 +188,18 @@ router.post(
                 console.log(`[QuestionGen] Extracted ${syllabusText.length} characters from syllabus PDF`);
             }
 
-            // Fallback: If minimal text extracted (likely scanned PDF), check for snippets
-            if ((!syllabusText || syllabusText.trim().length < 50) && req.body.snippets) {
-                console.log('[QuestionGen] minimal text found in PDF. Checking for snippets...');
+            // PRIORITY: If snippets are provided, use them as the PRIMARY source and ignore full PDF text
+            // The user explicitly requested: "if a user snips a content... only that snipped content should be used"
+            if (req.body.snippets) {
                 try {
                     const snippets = JSON.parse(req.body.snippets);
+                    // Check if snippets array has items
                     if (Array.isArray(snippets) && snippets.length > 0) {
-                        console.log(`[QuestionGen] Processing ${snippets.length} snippets with OCR...`);
+                        console.log(`[QuestionGen] Snippets detected. Processing ${snippets.length} snippets with OCR...`);
+                        
                         let snippetText = "";
                         
-                        // Process snippets in parallel (limit concurrency if needed, but Tesseract handles queue)
+                        // Process snippets in parallel
                         const ocrPromises = snippets.map(async (snippet: any, index: number) => {
                             try {
                                 // Tesseract.recognize accepts base64 data URLs directly
@@ -212,9 +214,12 @@ router.post(
                         const ocrResults = await Promise.all(ocrPromises);
                         snippetText = ocrResults.join('\n');
                         
-                        if (snippetText.trim().length > 20) {
-                            console.log(`[QuestionGen] OCR successful. Extracted ${snippetText.length} chars.`);
-                            syllabusText += "\n\n=== OCR EXTRACTED CONTENT FROM SNIPPETS ===\n" + snippetText;
+                        if (snippetText.trim().length > 10) {
+                            console.log(`[QuestionGen] OCR successful. Extracted ${snippetText.length} chars from snippets.`);
+                            console.log('[QuestionGen] OVERRIDING syllabus text with snippet content as per user request.');
+                            syllabusText = "=== CONTENT FROM USER SNIPPETS ===\n" + snippetText;
+                        } else {
+                             console.warn('[QuestionGen] Snippets were provided but OCR extracted minimal text. Falling back to PDF text if available.');
                         }
                     }
                 } catch (jsonErr) {
@@ -234,11 +239,61 @@ router.post(
 
             if (!syllabusText || syllabusText.trim().length < 20) {
                 console.error('[QuestionGen] PDF text extraction failed - likely a scanned/image-based PDF');
-                return res.status(400).json({ 
-                    error: "Could not extract text from the syllabus PDF.\n\n" +
-                           "This appears to be a scanned document. Please use the 'Snip Content' tool (Scissors icon) " +
-                           "to select the syllabus areas manually, then click Generate again."
-                });
+                
+                let errorMessage = "Could not extract text from the syllabus PDF.\n\n" +
+                                   "This appears to be a scanned document. Please use the 'Snip Content' tool (Scissors icon) " +
+                                   "to select the syllabus areas manually.";
+
+                if (req.body.targetChapter) {
+                    errorMessage = `Cannot search for chapter "${req.body.targetChapter}" because the uploaded PDF is scanned/image-based.\n\n` +
+                                   "Please use the 'Snip Content' tool (Scissors icon) to manually capture the relevant pages for this chapter.";
+                }
+
+                return res.status(400).json({ error: errorMessage });
+            }
+
+            // DYNAMIC CHAPTER EXTRACTION
+            // If the user specified a target chapter, we filter the syllabus text to only include relevant content.
+            const targetChapter = req.body.targetChapter;
+            if (targetChapter && targetChapter.trim().length > 0) {
+                console.log(`[QuestionGen] Target chapter specified: "${targetChapter}". Extracting relevant content...`);
+                
+                try {
+                    const extractionPrompt = `You are an expert curriculum analyzer. 
+                    The user wants to generate questions ONLY for the chapter/topic: "${targetChapter}".
+                    
+                    Below is the full syllabus text. 
+                    Extract EVERYTHING related to "${targetChapter}" (definitions, formulas, sub-topics, examples).
+                    Ignore all other chapters.
+                    
+                    If the chapter is NOT found, return: "CHAPTER_NOT_FOUND".
+                    
+                    FULL SYLLABUS:
+                    ${syllabusText.substring(0, 15000)}` // Limit to 15k chars to fit context if needed
+
+                    const extractionCompletion = await AI.complete({
+                        model: "llama-3.3-70b-versatile",
+                        messages: [
+                            { role: "system", content: "You are a precise curriculum extractor." },
+                            { role: "user", content: extractionPrompt }
+                        ],
+                        temperature: 0.0,
+                    });
+
+                    const extractedContent = extractionCompletion.choices[0].message.content.trim();
+
+                    if (extractedContent.includes("CHAPTER_NOT_FOUND")) {
+                         console.warn(`[QuestionGen] Warning: Target chapter "${targetChapter}" not found in syllabus.`);
+                         // Fallback: Proceed with full syllabus but warn? Or just proceed.
+                         // For now, we'll append a clearer instruction to the final prompt.
+                    } else {
+                        console.log(`[QuestionGen] Successfully extracted ${extractedContent.length} chars for chapter "${targetChapter}".`);
+                        syllabusText = `=== FOCUS CHAPTER: ${targetChapter} ===\n\n${extractedContent}`;
+                    }
+                } catch (extractErr) {
+                    console.error('[QuestionGen] Chapter extraction failed:', extractErr);
+                    // Fallback to full syllabus
+                }
             }
 
             const parsedSections = JSON.parse(sections);
@@ -371,8 +426,21 @@ router.post(
             const completion = await AI.complete({
                 model: "llama-3.1-8b-instant",
                 messages: [
-                    { role: "system", content: "You are an AI document analyzer. Output ONLY JSON." },
-                    { role: "user", content: `Analyze: ${syllabusText.substring(0, 5000)}` }
+                    { 
+                        role: "system", 
+                        content: `You are an AI document quality analyzer for an educational platform. 
+                        Analyze the provided syllabus text and return a JSON object with:
+                        - "score": A number between 0-100 indicating document clarity and usability.
+                        - "feedback": A brief string explanation.
+
+                        SCORING RULES:
+                        - If text is gibberish, very short (<100 chars), or looks like bad OCR -> Score < 50.
+                        - If text has some errors but is readable -> Score 50-75.
+                        - If text is clear, structured, and comprehensive -> Score 80-100.
+                        
+                        OUTPUT STRICT JSON ONLY.` 
+                    },
+                    { role: "user", content: `Analyze this content: ${syllabusText.substring(0, 5000)}` }
                 ] as any,
                 temperature: 0.1,
                 response_format: { type: "json_object" }
