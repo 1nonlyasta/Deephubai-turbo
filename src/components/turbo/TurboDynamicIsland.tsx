@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Search, Zap, Cpu, Share2, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import BrandLogo from "../../assets/logo-new.svg";
-import AIModelSwitcher from "../AIModelSwitcher";
+import AIModelSwitcher from "./AIModelSwitcher";
 
 interface TurboDynamicIslandProps {
   title: string;
@@ -97,12 +97,7 @@ export default function TurboDynamicIsland({
                 </div>
 
                 {activePage === "dashboard" ? (
-                  <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg">
-                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="text-[9px] font-bold text-white/60 tracking-wide">
-                      SYSTEM ONLINE
-                    </span>
-                  </div>
+                  <AIModelSwitcher compact={false} />
                 ) : (
                   <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
                     <Zap
