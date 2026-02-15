@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Search, Zap, Cpu, Share2, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import BrandLogo from "../../assets/logo-new.svg";
-import AIModelSwitcher from "./AIModelSwitcher";
+import AIModelSwitcher from "../AIModelSwitcher";
 
 interface TurboDynamicIslandProps {
   title: string;
