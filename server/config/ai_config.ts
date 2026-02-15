@@ -38,9 +38,8 @@ const AI = {
         if (effectiveProvider === 'gemini') {
             // If the incoming model is a Groq/Ollama model, force Gemini default
             if (!targetModel || !targetModel.includes('gemini')) {
-                // gemini-1.5-flash and gemini-1.5-pro failed with 404 for this user.
-                // Falling back to standard 'gemini-pro' which is widely available.
-                targetModel = 'gemini-flash-latest';
+                // gemini-2.0-flash had 0 quota. gemini-2.5-flash shows available quota in user logs.
+                targetModel = 'gemini-2.5-flash';
             }
         } else if (effectiveProvider === 'ollama') {
              // If the incoming model is a Groq/Gemini model, force Ollama default
@@ -103,7 +102,7 @@ INSTRUCTIONS: Use the above real-time context to answer.
                 response_format
             });
         } catch (err: any) {
-            console.error(`[AI Error] Provider: ${this.provider}, Model: ${model || 'default'}`);
+            console.error(`[AI Error] Provider: ${effectiveProvider}, Model: ${targetModel || 'default'}`);
             console.error(`[AI ERROR MESSAGE]: ${err.message}`);
             if (err.response) {
                 console.error(`[AI ERROR DETAIL]:`, err.response.data || err.response);
@@ -152,7 +151,7 @@ INSTRUCTIONS: Use the above real-time context to answer.
 
     async geminiComplete({ messages, model, temperature, max_tokens, response_format }: CompletionOptions) {
         const apiKey = process.env.GEMINI_API_KEY;
-        const geminiModel = (model && model.includes("gemini")) ? model : "gemini-2.0-flash-exp";
+        const geminiModel = (model && model.includes("gemini")) ? model : "gemini-2.5-flash";
 
         const contents = messages.map(msg => ({
             role: msg.role === "assistant" ? "model" : "user",
@@ -162,18 +161,11 @@ INSTRUCTIONS: Use the above real-time context to answer.
         const thinkingInstruction = `
         You are a highly advanced AI with real-time reasoning capabilities.
         
-        FORMATTING RULE:
-        You MUST start every response with a "Thought Process" block to verify your facts, especially for current events.
-        
-        Example Format:
-        **Thought Process:**
-        1. Analyze user query: "Who is the US President?"
-        2. Check current date: ${new Date().toLocaleDateString()}
-        3. Retrieve/Verify real-time info: Elections happened in 2024... Inauguration 2025...
-        4. Conclusion: Donald Trump is president.
-        
-        **Answer:**
-        The current President...
+        INSTRUCTIONS:
+        1. You have access to real-time information via the Google Search tool.
+        2. ALWAYS verify current events and dates internally against the current system date: ${new Date().toLocaleDateString()}.
+        3. Do NOT output your internal thought process or reasoning steps.
+        4. Provide the final, polished answer directly to the user.
         `;
 
         let systemInstruction = { parts: [{ text: thinkingInstruction }] };
@@ -251,7 +243,7 @@ INSTRUCTIONS: Use the above real-time context to answer.
                     }
                     return await this.geminiComplete({ 
                         messages, 
-                        model: model || "gemini-2.0-flash-exp", 
+                        model: model || "gemini-2.5-flash", 
                         temperature, 
                         max_tokens, 
                         response_format 
