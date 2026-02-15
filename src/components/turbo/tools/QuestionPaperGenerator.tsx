@@ -6,6 +6,8 @@ import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
+import PDFSnipper from './PDFSnipper';
+
 // A4 Pagination Constants
 const A4_HEIGHT_PX = 1122.5;
 const TOP_MARGIN_PX = 56.7; // 1.5cm
@@ -393,7 +395,14 @@ export default function QuestionPaperGenerator() {
     return (
         <div className="space-y-8 animate-fade-in pb-20 relative">
             {/* Snipper Modal */}
-            {/* Snipper Modal Removed */}
+            {showSnipper && syllabusFile && (
+                <PDFSnipper
+                    file={syllabusFile}
+                    onConfirm={handleSnipConfirm}
+                    onCancel={() => setShowSnipper(false)}
+                    initialSnippets={syllabusSnippets}
+                />
+            )}
 
             {/* Header */}
             <div className="flex items-center justify-between">
@@ -473,6 +482,39 @@ export default function QuestionPaperGenerator() {
                             <div className="flex items-center gap-2 text-xs text-white/50 animate-pulse">
                                 <Loader2 size={12} className="animate-spin" />
                                 <span>Analyzing document structure...</span>
+                            </div>
+                        )}
+
+                        {/* Snip Action - ADDED RESTORATION */}
+                        {syllabusFile && (
+                            <div className="animate-fade-in">
+                                <button
+                                    onClick={() => setShowSnipper(true)}
+                                    className="w-full py-2 bg-gradient-to-r from-purple-500/20 to-blue-500/20 border border-purple-500/30 rounded-lg text-xs font-bold text-purple-200 hover:text-white hover:border-purple-500/50 transition-all flex items-center justify-center gap-2 group"
+                                >
+                                    <Scissors size={14} className="group-hover:rotate-12 transition-transform" />
+                                    Snip Content from Syllabus
+                                </button>
+                            </div>
+                        )}
+
+                        {/* Display Snippets - ADDED RESTORATION */}
+                        {syllabusSnippets.length > 0 && (
+                            <div className="space-y-2 animate-fade-in">
+                                <h4 className="text-xs font-medium text-white/60 uppercase">Captured Snippets</h4>
+                                <div className="grid grid-cols-2 gap-2">
+                                    {syllabusSnippets.map((snip, i) => (
+                                        <div key={snip.id} className="relative group rounded-lg overflow-hidden border border-white/10 aspect-video bg-black/40">
+                                            <img src={snip.image} className="w-full h-full object-contain" alt={`Snippet ${i + 1}`} />
+                                            <button
+                                                onClick={() => setSyllabusSnippets(syllabusSnippets.filter(s => s.id !== snip.id))}
+                                                className="absolute top-1 right-1 p-1 bg-red-500/80 rounded text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                                            >
+                                                <Trash2 size={10} />
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         )}
 
