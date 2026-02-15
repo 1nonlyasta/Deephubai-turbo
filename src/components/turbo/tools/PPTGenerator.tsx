@@ -22,7 +22,7 @@ import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
 import { motion, AnimatePresence } from 'framer-motion';
-import BrandLogo from '../../../assets/logo-new.PNG';
+import BrandLogo from '../../../assets/logo-new.svg';
 
 const LOADING_MESSAGES = [
     "Initializing neural engine...",

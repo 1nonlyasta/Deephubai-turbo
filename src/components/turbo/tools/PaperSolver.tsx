@@ -19,7 +19,7 @@ import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
 import { motion, AnimatePresence } from 'framer-motion';
 import Tesseract from 'tesseract.js';
-import BrandLogo from '../../../assets/logo-new.PNG';
+import BrandLogo from '../../../assets/logo-new.svg';
 
 import { useAI } from "../../../context/AIContext";
 
