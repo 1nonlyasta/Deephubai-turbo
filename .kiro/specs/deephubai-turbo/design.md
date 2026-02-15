@@ -17,7 +17,7 @@ graph TD
     subgraph AIEngines[AI Engines Multi-Model Architecture]
         Logic[Business Logic]
         Groq[Groq LPU Primary Llama-3.3-70B]
-        Gemini[Google Gemini 2.0 Flash + Search]
+        Gemini[Google Gemini 2.5 Flash + Search]
         Ollama[Ollama Local Llama 3.2:1b]
         Moonshot[Moonshot moonshot-v1-128k]
         OCR[Tesseract.js WASM OCR]
@@ -87,13 +87,13 @@ graph TD
 ### 2.4 AI & Processing (Multi-Model Architecture)
 
 - **Primary Inference:** **Groq SDK** - Leveraging LPU™ Inference Engine with Llama-3.3-70B-Versatile for ultra-low latency (approx 300 tokens/sec).
-- **Fallback & Search:** **Google Gemini 2.0 Flash** - High-context window model with native Google Search grounding tool for real-time information retrieval.
+- **Fallback & Search:** **Google Gemini 2.5 Flash** - High-context window model with native Google Search grounding tool for real-time information retrieval.
 - **Local Intelligence:** **Ollama** - Running Llama 3.2:1b locally for privacy-preserving, deep research tasks without internet dependency.
 - **Extended Context:** **Moonshot/Kimi** - moonshot-v1-128k model for extended context windows.
 - **Fallback Chain:** Groq → Gemini → Ollama (automatic switching on rate limits/failures)
 - **OCR:** **Tesseract.js** - WASM-based client-side Optical Character Recognition.
 - **Mathematics:** KaTeX / Rehype-Katex - rendering complex mathematical formulas.
-- **PDF Parsing:** pdf-parse - extracting text from uploaded PDFs with chunking strategy (6000 char chunks).
+- **PDF Parsing:** pdf-parse (Primary) + pdfjs-dist (Fallback) - extracting text from uploaded PDFs with "Double-Safety" dual-engine architecture and chunking strategy (6000 char chunks).
 
 ### 2.5 Document Generation
 
@@ -161,7 +161,7 @@ graph TD
   ```
 - **Responsibilities:**
   - Attempt Groq inference first (Llama-3.3-70B-Versatile)
-  - Failover to Gemini 2.0 Flash on error/rate-limit (with Google Search grounding)
+  - Failover to Gemini 2.5 Flash on error/rate-limit (with Google Search grounding)
   - Route to Ollama (Llama 3.2:1b) for local processing
   - Route to Moonshot (moonshot-v1-128k) for extended context
   - Handle API errors gracefully with user-friendly messages
@@ -201,7 +201,7 @@ Each AI tool follows this structure:
 
 1. **LessonPlanBuilder.tsx** - Structured lesson plan generation
 2. **HomeworkCreator.tsx** - Homework with answer keys
-3. **QuestionPaperGenerator.tsx** - Question papers with file upload
+3. **Question Paper Generator.tsx** - Question papers with file upload and "Target Chapter" extraction logic
 4. **PaperSolver.tsx** - Paper solving with chunking strategy
 5. **ReportCardAssistant.tsx** - Report card comments with vision support
 6. **PPTGenerator.tsx** - PowerPoint slide generation
@@ -218,9 +218,10 @@ Each AI tool follows this structure:
 3.  **Processing:** Input data is structured and formatted for AI consumption.
 4.  **Inference Orchestration:**
     - **Attempt 1:** Request sent to **Groq** (Llama-3.3-70B-Versatile) for immediate response.
-    - **Failover:** If Groq rate-limits (429) or fails, the request automatically reroutes to **Gemini 2.0 Flash** with Google Search grounding.
+    - **Failover:** If Groq rate-limits (429) or fails, the request automatically reroutes to **Gemini 2.5 Flash** with Google Search grounding.
     - **Extended Context:** If user selects Moonshot, request routes to moonshot-v1-128k for extended context windows.
     - **Deep Mode:** If user selects "Deep Research" or "Ollama", request routes to `localhost:11434` for processing via local Llama 3.2:1b.
+    - **Target Chapter:** For Question Generation, specific chapters are extracted via smart segmentation before AI injection.
     - **Vision/OCR:** Image/PDF uploads are processed locally via Tesseract.js WASM to extract text before LLM injection.
     - **Chunking:** Large documents are split into 6000 char chunks to prevent token overflow.
 5.  **Response Handling:** The AI response is received, parsed (Markdown/JSON), and stored in the local state.

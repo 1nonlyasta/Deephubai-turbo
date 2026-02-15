@@ -2,7 +2,7 @@
 
 ## 1. Introduction
 
-DeepHubAI Turbo is a production-ready, AI-powered suite of tools designed specifically for educators. It aims to streamline administrative and instructional tasks, allowing teachers to focus more on student engagement and less on paperwork. By leveraging a multi-model AI architecture (Groq LPU + Gemini 2.0 Flash + Ollama + Moonshot) with intelligent fallback chains and local processing capabilities, Turbo provides a fast, secure, and intuitive experience with 100% uptime guarantee.
+DeepHubAI Turbo is a production-ready, AI-powered suite of tools designed specifically for educators. It aims to streamline administrative and instructional tasks, allowing teachers to focus more on student engagement and less on paperwork. By leveraging a multi-model AI architecture (Groq LPU + Gemini 2.5 Flash + Ollama + Moonshot) with intelligent fallback chains and local processing capabilities, Turbo provides a fast, secure, and intuitive experience with 100% uptime guarantee.
 
 ## 2. Functional Requirements
 
@@ -45,6 +45,7 @@ The system must provide 9 distinct AI-powered modules accessible from a unified 
 3. User can shuffle questions to create different sets
 4. Question distribution matches the provided blueprint
 5. Output includes proper marking scheme
+6. System supports "Target Chapter" extraction from large syllabus PDFs
 
 #### 2.1.4 Paper Solver
 
@@ -55,8 +56,9 @@ The system must provide 9 distinct AI-powered modules accessible from a unified 
 1. System accepts uploaded images (PNG, JPG) of question papers
 2. System accepts uploaded PDF documents of question papers
 3. OCR accurately extracts text from scanned documents (>90% accuracy)
-4. AI generates solutions with step-by-step explanations
-5. User can copy or export solutions to PDF
+4. System uses "Double-Safety" dual-engine extraction (pdf-parse + pdfjs-dist) for digital PDFs
+5. AI generates solutions with step-by-step explanations
+6. User can copy or export solutions to PDF
 
 #### 2.1.5 Report Card Assistant
 
@@ -170,8 +172,8 @@ The system must provide 9 distinct AI-powered modules accessible from a unified 
 **Acceptance Criteria:**
 
 1. Groq (Llama-3.3-70B-Versatile) is used as primary inference engine
-2. System automatically falls back to Gemini 2.0 Flash on Groq failure/rate limit
-3. Gemini 2.0 Flash includes native Google Search grounding tool for real-time information
+2. System automatically falls back to Gemini 2.5 Flash on Groq failure/rate limit
+3. Gemini 2.5 Flash includes native Google Search grounding tool for real-time information
 4. Ollama (Llama 3.2:1b) is available for local/private processing
 5. Moonshot/Kimi (moonshot-v1-128k) is available for extended context windows
 6. User can manually select AI provider via AIContext (auto/groq/gemini/ollama/moonshot)

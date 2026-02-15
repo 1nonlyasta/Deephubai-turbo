@@ -10,17 +10,17 @@
 
 **Built for the AWS AI Bharat Hackathon 2026**
 
-DeepHubAI Turbo is a production-ready educational tool suite designed to empower teachers with ultra-low latency AI assistance. By combining the raw speed of **Groq LPUs** (Llama-3.3-70B), the reasoning capabilities of **Google Gemini 2.0 Flash** with native search grounding, and the privacy of local **Ollama models** (Llama 3.2), Turbo delivers an unmatched experience in lesson planning, grading, and academic research.
+DeepHubAI Turbo is a production-ready educational tool suite designed to empower teachers with ultra-low latency AI assistance. By combining the raw speed of **Groq LPUs** (Llama-3.3-70B), the reasoning capabilities of **Google Gemini 2.5 Flash** with native search grounding, and the privacy of local **Ollama models** (Llama 3.2), Turbo delivers an unmatched experience in lesson planning, grading, and academic research.
 
 ---
 
 ## 🚀 Why DeepHubAI Turbo?
 
 - **⚡ Zero Latency:** Powered by Groq's LPU Inference Engine (Llama-3.3-70B-Versatile), generating content at 300+ tokens/sec
-- **🧠 Intelligent Fallback Chain:** Automatic switching between Groq → Gemini 2.0 Flash → Ollama (Llama 3.2:1b) on rate limits/failures, ensuring 100% uptime
+- **🧠 Intelligent Fallback Chain:** Automatic switching between Groq → Gemini 2.5 Flash → Ollama (Llama 3.2:1b) on rate limits/failures, ensuring 100% uptime
 - **📊 Neural Analytics:** High-performance dashboard tracking AI speed, throughput, and model efficiency in real-time
 - **🖋️ Institutional Document Secretary:** Refined A4-perfect letter generator with strict institutional formatting and 200-300 word AI calibration
-- **🧠 Native Web Search:** Gemini 2.0 Flash integration with Google Search grounding tool for real-time information retrieval
+- **🧠 Native Web Search:** Gemini 2.5 Flash integration with Google Search grounding tool for real-time information retrieval
 - **🛡️ Privacy-First Deep Research:** Route sensitive queries to local Ollama (Llama 3.2:1b) - data never leaves your machine
 - **👁️ Advanced OCR Vision:** Tesseract.js WASM + Vision models for handwritten question paper digitization (>90% accuracy)
 - **🎨 Modern UI/UX:** Glassmorphism design with light/dark theme support and responsive layouts
@@ -46,7 +46,7 @@ Create ready-to-print homework assignments with automatic answer keys. Supports 
 
 #### 3. 📄 Question Paper Generator
 
-Upload syllabus materials (PDF/TXT) and generate standardized question papers with proper marking schemes. Supports blueprint adherence and JSON output.
+Upload syllabus materials (PDF/TXT) and generate standardized question papers with proper marking schemes. Supports "Target Chapter" extraction from large PDFs.
 
 **API:** `POST /api/question-paper/generate` (with file upload)
 
@@ -101,7 +101,7 @@ A stunning, glassmorphism-driven dashboard for monitoring AI performance. Tracks
 ### The AI Quartet (Multi-Model Architecture)
 
 1. **Groq (Llama-3.3-70B-Versatile):** Primary engine handling 90% of requests with 300+ tokens/sec speed
-2. **Google Gemini 2.0 Flash:** Fallback engine with native Google Search grounding tool for real-time information
+2. **Google Gemini 2.5 Flash:** Fallback engine with native Google Search grounding tool for real-time information
 3. **Ollama (Llama 3.2:1b):** Local engine for offline tasks and private "Deep Research" mode
 4. **Kimi/Moonshot (moonshot-v1-128k):** Secondary provider for extended context windows
 
@@ -250,7 +250,7 @@ DeepHubAI-Turbo/
 │   │   │       ├── DocumentSecretary.tsx
 │   │   │       ├── QuizShuffler.tsx
 │   │   │       └── PDFSnipper.tsx
-│   │   └── product/              # Radix UI components (20+)
+│   │   └── ui/                   # Radix UI components
 │   ├── pages/
 │   │   └── Turbo.tsx             # Main Turbo page
 │   ├── contexts/
